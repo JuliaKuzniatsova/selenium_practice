@@ -1,3 +1,4 @@
+import selenium.common.exceptions
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 import time
@@ -5,35 +6,7 @@ import time
 driver = webdriver.Chrome()
 
 
-def test_logout():
-    driver.get("https://www.saucedemo.com/")
-
-    url_before = driver.current_url
-
-    username_field = driver.find_element(By.XPATH, '//input[@data-test="username"]')
-    username_field.send_keys("standard_user")
-
-    password_field = driver.find_element(By.XPATH, '//input[@data-test="password"]')
-    password_field.send_keys("secret_sauce")
-
-    login_button = driver.find_element(By.XPATH, '//input[@data-test="login-button"]')
-    login_button.click()
-
-    burger_menu = driver.find_element(By.ID, 'react-burger-menu-btn')
-    burger_menu.click()
-    time.sleep(2)
-
-    logout_button = driver.find_element(By.CSS_SELECTOR, '#logout_sidebar_link')
-    logout_button.click()
-    time.sleep(1)
-
-    url_after = driver.current_url
-    assert url_before == url_after
-
-    driver.quit()
-
-
-def test_about():
+def test_click_on_item_image():
     driver.get("https://www.saucedemo.com/")
 
     username_field = driver.find_element(By.XPATH, '//input[@data-test="username"]')
@@ -45,16 +18,32 @@ def test_about():
     login_button = driver.find_element(By.XPATH, '//input[@data-test="login-button"]')
     login_button.click()
 
-    burger_menu = driver.find_element(By.ID, 'react-burger-menu-btn')
-    burger_menu.click()
-    time.sleep(2)
+    item_image = driver.find_element(By.CSS_SELECTOR, "img[alt='Sauce Labs Backpack']")
+    item_image.click()
 
-    about_button = driver.find_element(By.ID, 'about_sidebar_link')
-    about_button.click()
+    assert driver.find_element(By.CSS_SELECTOR, "div[id='inventory_item_container']")
     time.sleep(2)
-
-    about_page_url = driver.current_url
-    expected_url = "https://saucelabs.com/"
-    assert about_page_url == expected_url
 
     driver.quit()
+
+
+def test_click_on_item_name():
+    driver.get("https://www.saucedemo.com/")
+
+    username_field = driver.find_element(By.XPATH, '//input[@data-test="username"]')
+    username_field.send_keys("standard_user")
+
+    password_field = driver.find_element(By.XPATH, '//input[@data-test="password"]')
+    password_field.send_keys("secret_sauce")
+
+    login_button = driver.find_element(By.XPATH, '//input[@data-test="login-button"]')
+    login_button.click()
+
+    item_label = driver.find_element(By.CSS_SELECTOR, "div[class='inventory_item_label'] a[id='item_0_title_link']")
+    item_label.click()
+
+    assert driver.find_element(By.CSS_SELECTOR, "div[id='inventory_item_container']")
+    time.sleep(2)
+
+    driver.quit()
+
