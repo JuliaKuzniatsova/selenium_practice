@@ -1,114 +1,79 @@
-import selenium.common.exceptions
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 import time
-
-driver = webdriver.Chrome()
-
-
-def test_filter_A_to_Z():
-    driver.get("https://www.saucedemo.com/")
-
-    username_field = driver.find_element(By.XPATH, '//input[@data-test="username"]')
-    username_field.send_keys("standard_user")
-
-    password_field = driver.find_element(By.XPATH, '//input[@data-test="password"]')
-    password_field.send_keys("secret_sauce")
-
-    login_button = driver.find_element(By.XPATH, '//input[@data-test="login-button"]')
-    login_button.click()
-
-    option = driver.find_element(By.XPATH, '//option[@value="az"]')
-    option.click()
-    time.sleep(2)
-
-    items = driver.find_elements(By.XPATH, '//div[@class="inventory_item_label"]')
-    original_item_names = [item.text for item in items]
-
-    sorted_list_of_items = sorted(original_item_names, reverse=False)
-
-    assert sorted_list_of_items == original_item_names, "Items are not sorted from A to Z"
-
-    driver.quit()
+from Data.conftest import driver_setup
+from Data.conftest import login
+from Locators.Locators import Locators
 
 
-def test_filter_Z_to_A():
-    driver.get("https://www.saucedemo.com/")
+class TestFilter():
+    locator = Locators()
 
-    username_field = driver.find_element(By.XPATH, '//input[@data-test="username"]')
-    username_field.send_keys("standard_user")
+    def test_filter_A_to_Z(self, driver_setup, login):
+        driver = driver_setup
 
-    password_field = driver.find_element(By.XPATH, '//input[@data-test="password"]')
-    password_field.send_keys("secret_sauce")
+        option = driver.find_element(*self.locator.AZ_OPTION)
+        option.click()
+        time.sleep(2)
 
-    login_button = driver.find_element(By.XPATH, '//input[@data-test="login-button"]')
-    login_button.click()
+        items = driver.find_elements(*self.locator.ITEMS)
+        original_item_names = [item.text for item in items]
 
-    option = driver.find_element(By.XPATH, '//option[@value="za"]')
-    option.click()
-    time.sleep(2)
+        sorted_list_of_items = sorted(original_item_names, reverse=False)
 
-    items = driver.find_elements(By.XPATH, '//div[@class="inventory_item_label"]')
-    original_item_names = [item.text for item in items]
+        assert sorted_list_of_items == original_item_names, "Items are not sorted from A to Z"
 
-    sorted_list_of_items = sorted(original_item_names, reverse=True)
-
-    assert sorted_list_of_items == original_item_names, "Items are not sorted from Z to A"
-
-    driver.quit()
+        driver.quit()
 
 
-def test_filter_Low_to_High():
-    driver.get("https://www.saucedemo.com/")
+    def test_filter_Z_to_A(self, driver_setup, login):
+        driver = driver_setup
 
-    username_field = driver.find_element(By.XPATH, '//input[@data-test="username"]')
-    username_field.send_keys("standard_user")
+        option = driver.find_element(*self.locator.ZA_OPTION)
+        option.click()
+        time.sleep(2)
 
-    password_field = driver.find_element(By.XPATH, '//input[@data-test="password"]')
-    password_field.send_keys("secret_sauce")
+        items = driver.find_elements(*self.locator.ITEMS)
+        original_item_names = [item.text for item in items]
 
-    login_button = driver.find_element(By.XPATH, '//input[@data-test="login-button"]')
-    login_button.click()
+        sorted_list_of_items = sorted(original_item_names, reverse=True)
 
-    option = driver.find_element(By.XPATH, '//option[@value="lohi"]')
-    option.click()
-    time.sleep(2)
+        assert sorted_list_of_items == original_item_names, "Items are not sorted from Z to A"
 
-    item_prices = driver.find_elements(By.XPATH, '//div[@class="inventory_item_price"]')
-    original_item_prices = [item.text for item in item_prices]
-
-    numerical_prices = [float(price.replace('$', '')) for price in original_item_prices]
-
-    sorted_item_prices = sorted(numerical_prices)
-
-    assert sorted_item_prices == numerical_prices, "Prices are not sorted from low to high"
-
-    driver.quit()
+        driver.quit()
 
 
-def test_filter_High_to_Low():
-    driver.get("https://www.saucedemo.com/")
+    def test_filter_Low_to_High(self, driver_setup, login):
+        driver = driver_setup
 
-    username_field = driver.find_element(By.XPATH, '//input[@data-test="username"]')
-    username_field.send_keys("standard_user")
+        option = driver.find_element(*self.locator.LOHI_OPTION)
+        option.click()
+        time.sleep(2)
 
-    password_field = driver.find_element(By.XPATH, '//input[@data-test="password"]')
-    password_field.send_keys("secret_sauce")
+        item_prices = driver.find_elements(*self.locator.ITEM_PRICES)
+        original_item_prices = [item.text for item in item_prices]
 
-    login_button = driver.find_element(By.XPATH, '//input[@data-test="login-button"]')
-    login_button.click()
+        numerical_prices = [float(price.replace('$', '')) for price in original_item_prices]
 
-    option = driver.find_element(By.XPATH, '//option[@value="hilo"]')
-    option.click()
-    time.sleep(2)
+        sorted_item_prices = sorted(numerical_prices)
 
-    item_prices = driver.find_elements(By.XPATH, '//div[@class="inventory_item_price"]')
-    original_item_prices = [item.text for item in item_prices]
+        assert sorted_item_prices == numerical_prices, "Prices are not sorted from low to high"
 
-    numerical_prices = [float(price.replace('$', '')) for price in original_item_prices]
+        driver.quit()
 
-    sorted_item_prices = sorted(numerical_prices, reverse=True)
 
-    assert sorted_item_prices == numerical_prices, "Prices are not sorted from high to low"
+    def test_filter_High_to_Low(self, driver_setup, login):
+        driver = driver_setup
 
-    driver.quit()
+        option = driver.find_element(*self.locator.HILO_OPTION)
+        option.click()
+        time.sleep(2)
+
+        item_prices = driver.find_elements(*self.locator.ITEM_PRICES)
+        original_item_prices = [item.text for item in item_prices]
+
+        numerical_prices = [float(price.replace('$', '')) for price in original_item_prices]
+
+        sorted_item_prices = sorted(numerical_prices, reverse=True)
+
+        assert sorted_item_prices == numerical_prices, "Prices are not sorted from high to low"
+
+        driver.quit()

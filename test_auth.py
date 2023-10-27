@@ -1,52 +1,33 @@
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-import time 
-
-driver = webdriver.Chrome()
-
+import time
+from Data.conftest import driver_setup
+from Data.conftest import login
+from Locators.Locators import Locators
 
 
-def test_login_form_correct_data():
-    driver.get("https://www.saucedemo.com/")
+class TestAuthorization:
+    locator = Locators()
 
-    username_field = driver.find_element(By.XPATH, '//input[@data-test="username"]')
-    username_field.send_keys("standard_user")
-
-    password_field = driver.find_element(By.XPATH, '//input[@data-test="password"]')
-    password_field.send_keys("secret_sauce")
-
-    login_button = driver.find_element(By.XPATH, '//input[@data-test="login-button"]')
-    login_button.click()
-
-    time.sleep(2)
-    assert driver.current_url == "https://www.saucedemo.com/inventory.html"
-
-    driver.quit()
-
-
-def test_login_form_incorrect_data():
-    driver.get("https://www.saucedemo.com/")
-
-    username_field = driver.find_element(By.XPATH, '//input[@data-test="username"]')
-    username_field.send_keys("user")
-
-    password_field = driver.find_element(By.XPATH, '//input[@data-test="password"]')
-    password_field.send_keys("user")
-
-    login_button = driver.find_element(By.XPATH, '//input[@data-test="login-button"]')
-    login_button.click()
-
-    time.sleep(2)
-    assert driver.find_element(By.XPATH, '//div[@class="error-message-container error"]')
-
-    driver.quit()
+    def test_login_form_with_correct_data(self, driver_setup, login):
+        driver = driver_setup
+        time.sleep(2)
+        assert driver.current_url == "https://www.saucedemo.com/inventory.html"
+        driver.quit()
 
 
 
+    def test_login_form_with_incorrect_data(self, driver_setup):
+       driver = driver_setup
 
+       username_field = driver.find_element(*self.locator.USERNAME)
+       username_field.send_keys("user")
 
+       password_field = driver.find_element(*self.locator.PASSWORD)
+       password_field.send_keys("user")
 
+       login_button = driver.find_element(*self.locator.LOGIN_BTN)
+       login_button.click()
 
+       time.sleep(2)
+       assert driver.find_element(*self.locator.LOGIN_ERROR)
 
-
-
+       driver.quit()
