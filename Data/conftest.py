@@ -3,6 +3,9 @@ from selenium import webdriver
 from Data.Links import Links
 from Locators.Locators import Locators
 from Data.Entered_data_values import EnteredData
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.support.ui import WebDriverWait
+
 
 
 @pytest.fixture(scope="function")
@@ -12,6 +15,30 @@ def driver_setup():
     driver.get(links.LOGIN_PAGE)
     yield driver
     driver.quit()
+
+
+@pytest.fixture
+def driver(chrome_options):
+    driver = webdriver.Chrome(options=chrome_options)
+    links = Links()
+    driver.get(links.WAITS)
+    yield driver
+    driver.quit()
+
+
+@pytest.fixture
+def chrome_options():
+    options = Options()
+    options.add_argument('--window-size=500,500')
+    # options.add_argument('--incognito')
+    # options.add_argument('--headless')
+    return options
+
+
+@pytest.fixture
+def wait(driver):
+    wait = WebDriverWait(driver, timeout=10)
+    return wait
 
 
 @pytest.fixture(scope="function")
@@ -88,3 +115,21 @@ def checkout(driver_setup):
     continue_button.click()
 
     yield
+
+
+@pytest.fixture(scope="function")
+def test_header(driver):
+    locator = Locators()
+    h1_element = driver.find_element(*locator.H1_ELEMENT)
+    h1_text = h1_element.text
+
+    expected_text = "Практика с ожиданиями в Selenium"
+
+    if h1_text == expected_text:
+        print("Текст в <h1> соответствует ожидаемому.")
+    else:
+        print("Текст в <h1> не соответствует ожидаемому.")
+
+        driver.quit()
+
+
